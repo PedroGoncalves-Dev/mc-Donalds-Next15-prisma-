@@ -37,7 +37,7 @@ model MenuCategory {
   updatedAt    DateTime @updatedAt
 
   // relação
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   products   Product[]
 }
 
@@ -46,7 +46,7 @@ model Product {
   name           String
   description    String
   price          Float
-  ingredients    String
+  ingredients    String[]
   imageUrl       String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -55,7 +55,7 @@ model Product {
 
   // relação
   menuCategory  MenuCategory   @relation(fields: [menuCategoryId], references: [id])
-  restaurant    Restaurant     @relation(fields: [restaurantId], references: [id])
+  restaurant    Restaurant     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   orderProducts OrderProduct[]
 }
 
@@ -84,8 +84,13 @@ model OrderProduct {
   orderId   Int
 
   // relação
-  product Product @relation(fields: [productId], references: [id])
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   order   Order   @relation(fields: [orderId], references: [id])
+}
+
+model Teste {
+  id   Int    @id @default(autoincrement())
+  name String
 }
 
 enum OrderStatus {
