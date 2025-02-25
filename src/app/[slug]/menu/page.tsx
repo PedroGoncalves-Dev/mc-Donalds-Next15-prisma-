@@ -1,6 +1,7 @@
-import { db } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import RestaurantHeader from "./_components/restaurant-header";
+import RestaurantCategory from "./_components/category";
+import { getRestaurantBySlug } from "@/data/get-restaurant-by-slug";
 
 interface IRestaurantMenuPageProps {
   params: Promise<{ slug: string }>;
@@ -18,7 +19,7 @@ export default async function RestaurantMenuPage({
   const { slug } = await params;
   const { consuptionMethod: option } = await searchParams;
 
-  const restaurant = await db.restaurant.findUnique({ where: { slug } });
+  const restaurant = await getRestaurantBySlug(slug);
 
   if (!restaurant) {
     return notFound();
@@ -31,6 +32,8 @@ export default async function RestaurantMenuPage({
   return (
     <div className="">
       <RestaurantHeader restaurant={restaurant} />
+
+      <RestaurantCategory restaurant={restaurant} />
     </div>
   );
 }
