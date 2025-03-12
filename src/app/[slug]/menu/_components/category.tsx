@@ -4,6 +4,8 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Prisma } from "@prisma/client";
 import { ClockIcon } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
+import Products from "./products";
 
 interface IRestaurantCategoryProps {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -15,7 +17,21 @@ interface IRestaurantCategoryProps {
   }>;
 }
 
+type MenuCategoryWithProducts = Prisma.MenuCategoryGetPayload<{
+  include: { products: true };
+}>;
+
 const RestaurantCategory = ({ restaurant }: IRestaurantCategoryProps) => {
+  const [selectedCategory, setSelectedCategory] =
+    useState<MenuCategoryWithProducts>(restaurant.menuCategories[0]);
+
+  const handleCategoryClick = (category: MenuCategoryWithProducts) => {
+    setSelectedCategory(category);
+  };
+
+  const getCategoryButtonVariant = (category: MenuCategoryWithProducts) => {
+    return selectedCategory.id === category.id ? "default" : "secondary";
+  };
   return (
     <div className="relative z-50 mt-[-1.5rem] rounded-t-3xl border bg-white p-5">
       <div className="flex items-center gap-3">
@@ -37,16 +53,23 @@ const RestaurantCategory = ({ restaurant }: IRestaurantCategoryProps) => {
         <p>Aberto!</p>
       </div>
 
-      <ScrollArea className="w-full">
+      <ScrollArea className="w-full py-3">
         <div className="flex w-max space-x-4">
           {restaurant.menuCategories.map((category) => (
-            <Button key={category.id} variant={"secondary"} size={"sm"}>
+            <Button
+              onClick={() => handleCategoryClick(category)}
+              key={category.id}
+              variant={getCategoryButtonVariant(category)}
+              size={"sm"}
+            >
               {category.name}
             </Button>
           ))}
         </div>
-        <ScrollBar orientation="horizontal" />
+        <ScrollBar orientation="horizontal" className="hidden" />
       </ScrollArea>
+
+      <Products products={selectedCategory.products} />
     </div>
   );
 };
